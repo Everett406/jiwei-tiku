@@ -1,0 +1,21 @@
+{
+  "name": "apk_version",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/app": "^6.0.3",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/haptics": "^6.0.3",
+    "@capacitor/local-notifications": "^6.1.3",
+    "@capacitor/status-bar": "^6.0.3"
+  },
+  "description": ""
+}

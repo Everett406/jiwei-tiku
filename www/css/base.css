@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'Ma Shan Zheng';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/MaShanZheng-Regular.woff2') format('woff2'),
+       url('../fonts/MaShanZheng-Regular.ttf') format('truetype');
+}
+
+:root {
+  --paper: #F9F6F1;
+  --paper-2: #F3EEE6;
+  --card: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-2: #6B6B6B;
+  --line: #1A1A1A;
+  --tape-blue: #D6E4E8;
+  --tape-green: #D8E6D8;
+  --tape-yellow: #F5E8C8;
+  --tape-pink: #F5DCDC;
+  --ok: #4A6B4C;
+  --bad: #8B4A4A;
+  --highlight: #F5E8C8;
+}
+[data-theme="dark"] {
+  --paper: #1E2127;
+  --paper-2: #272B32;
+  --card: #2A2F36;
+  --ink: #E8E4DE;
+  --ink-2: #8B949E;
+  --line: #4B5563;
+  --tape-blue: #2A3B45;
+  --tape-green: #2A3F2E;
+  --tape-yellow: #4A4030;
+  --tape-pink: #4A3030;
+  --ok: #6B9E7E;
+  --bad: #C48A8A;
+  --highlight: #5A5040;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.7; overflow: hidden; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }
+html::before { content: ""; position: fixed; inset: 0; opacity: .35; pointer-events: none; z-index: 0; background-image:
+  linear-gradient(var(--line) 1px, transparent 1px),
+  linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center top;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(0,0,0,.03) 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(0,0,0,.03) 60%, transparent 100%); }
+#app { max-width: 520px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--paper); padding-top: 32px; padding-bottom: 8px; }
+#app::before { content: ""; position: absolute; inset: 0; opacity: .04; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* Page transitions moved to utils.css */
+
+/* Font sizes */
+.q-title { font-size: 18px; }
+html[data-font-size="small"] .q-title { font-size: 16px; }
+html[data-font-size="normal"] .q-title { font-size: 18px; }
+html[data-font-size="large"] .q-title { font-size: 20px; }
+html[data-font-size="xlarge"] .q-title { font-size: 22px; }
+
+.opt-txt { font-size: 16px; }
+html[data-font-size="small"] .opt-txt { font-size: 14px; }
+html[data-font-size="normal"] .opt-txt { font-size: 16px; }
+html[data-font-size="large"] .opt-txt { font-size: 18px; }
+html[data-font-size="xlarge"] .opt-txt { font-size: 20px; }
+
+.q-badge { font-size: 12px; }
+html[data-font-size="small"] .q-badge { font-size: 11px; }
+html[data-font-size="normal"] .q-badge { font-size: 12px; }
+html[data-font-size="large"] .q-badge { font-size: 13px; }
+html[data-font-size="xlarge"] .q-badge { font-size: 14px; }
+
+.feedback-note { font-size: 15px; }
+html[data-font-size="small"] .feedback-note { font-size: 13px; }
+html[data-font-size="normal"] .feedback-note { font-size: 15px; }
+html[data-font-size="large"] .feedback-note { font-size: 17px; }
+html[data-font-size="xlarge"] .feedback-note { font-size: 19px; }
+
+.settings-label { font-size: 20px; }
+html[data-font-size="small"] .settings-label { font-size: 18px; }
+html[data-font-size="normal"] .settings-label { font-size: 20px; }
+html[data-font-size="large"] .settings-label { font-size: 22px; }
+html[data-font-size="xlarge"] .settings-label { font-size: 24px; }
+
+/* Font families */
+html[data-font-family="handwriting"] body { font-family: "Ma Shan Zheng", cursive; }
+html[data-font-family="wenkai"] body { font-family: "LXGW WenKai", "Noto Sans SC", sans-serif; }
+html[data-font-family="serif"] body { font-family: "Noto Serif SC", "Noto Sans SC", serif; }
+
+.blank-line { display: inline-block; width: 3.2em; height: .5em; border-bottom: 2px solid var(--ink); vertical-align: baseline; margin: 0 3px; }

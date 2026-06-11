@@ -1,0 +1,379 @@
+@import url('https://fonts.googleapis.cn/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+:root {
+  --paper: #F9F6F1;
+  --paper-2: #F3EEE6;
+  --card: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-2: #6B6B6B;
+  --line: #1A1A1A;
+  --tape-blue: #D6E4E8;
+  --tape-green: #D8E6D8;
+  --tape-yellow: #F5E8C8;
+  --tape-pink: #F5DCDC;
+  --ok: #4A6B4C;
+  --bad: #8B4A4A;
+  --highlight: #F5E8C8;
+}
+[data-theme="dark"] {
+  --paper: #1E2127;
+  --paper-2: #272B32;
+  --card: #2A2F36;
+  --ink: #E8E4DE;
+  --ink-2: #8B949E;
+  --line: #4B5563;
+  --tape-blue: #2A3B45;
+  --tape-green: #2A3F2E;
+  --tape-yellow: #4A4030;
+  --tape-pink: #4A3030;
+  --ok: #6B9E7E;
+  --bad: #C48A8A;
+  --highlight: #5A5040;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.7; overflow: hidden; }
+html::before { content: ""; position: fixed; inset: 0; opacity: .35; pointer-events: none; z-index: 0; background-image:
+  linear-gradient(var(--line) 1px, transparent 1px),
+  linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center top;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(0,0,0,.03) 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(0,0,0,.03) 60%, transparent 100%); }
+#app { max-width: 520px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--paper); }
+
+/* ===== Noise texture overlay ===== */
+#app::before { content: ""; position: absolute; inset: 0; opacity: .04; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* ===== Pages ===== */
+.page { display: none; flex-direction: column; height: 100%; overflow: hidden; position: absolute; inset: 0; background: var(--paper); z-index: 1; }
+.page.active { display: flex; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ===== Home ===== */
+.home-scroll { flex: 1; overflow-y: auto; padding: 28px 18px 60px; }
+.journal-header { margin-bottom: 28px; position: relative; }
+.journal-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; position: relative; z-index: 1; }
+.journal-title-row h1 { font-family: "Ma Shan Zheng", cursive; font-size: 40px; font-weight: 400; margin: 0; color: var(--ink); letter-spacing: 1px; display: inline-block; border: 3px solid var(--line); padding: 10px 18px; background: var(--card); box-shadow: 5px 5px 0 rgba(0,0,0,.15); transform: rotate(-1deg); position: relative; z-index: 2; }
+.journal-logo-inline { width: 72px; height: 72px; object-fit: contain; opacity: .8; filter: grayscale(15%); transform: rotate(6deg); margin-left: -52px; position: relative; z-index: 3; }
+.journal-header p { font-size: 13px; color: var(--ink-2); margin: 0; letter-spacing: .5px; }
+.theme-btn { position: absolute; top: 4px; right: 0; width: 42px; height: 42px; border: 2px solid var(--line); background: var(--card); font-size: 20px; cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,.12); transition: all .12s; display: flex; align-items: center; justify-content: center; z-index: 4; }
+.theme-btn:hover { transform: scale(1.05); box-shadow: 4px 4px 0 rgba(0,0,0,.15); }
+.theme-btn:active { transform: scale(.95); box-shadow: 1px 1px 0 rgba(0,0,0,.12); }
+
+.washi-strip, .tape-strip { height: 14px; background: repeating-linear-gradient(90deg, var(--tape-blue) 0, var(--tape-blue) 30px, var(--tape-green) 30px, var(--tape-green) 60px, var(--tape-yellow) 60px, var(--tape-yellow) 90px, var(--tape-pink) 90px, var(--tape-pink) 120px); margin: 0 -18px 24px; border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); opacity: .85; }
+
+.import-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.import-btn { flex: 1; padding: 14px; border: 2px solid var(--line); background: var(--ink); color: var(--card); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,.12); transition: all .1s; }
+.import-btn:hover { opacity: .9; }
+.import-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,.1); }
+.import-btn.secondary { flex: 0 0 auto; background: var(--card); color: var(--ink); }
+
+.lib-list { display: flex; flex-direction: column; gap: 12px; }
+.lib-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 14px; border: 2px solid var(--line); background: var(--card); box-shadow: 3px 3px 0 rgba(0,0,0,.08); cursor: pointer; transition: all .12s; }
+.lib-card:hover { transform: translateY(-1px); box-shadow: 4px 4px 0 rgba(0,0,0,.12); }
+.lib-card:active { transform: translateY(0); box-shadow: 2px 2px 0 rgba(0,0,0,.08); }
+.lib-name { font-family: "Ma Shan Zheng", cursive; font-size: 20px; color: var(--ink); margin-bottom: 4px; }
+.lib-meta { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.lib-menu-btn { width: 36px; height: 36px; border: 2px solid var(--line); background: var(--paper); font-size: 18px; color: var(--ink-2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.lib-menu-btn:hover { background: var(--paper-2); color: var(--ink); }
+
+.tape-grid { display: grid; gap: 16px; }
+.tape-item { position: relative; padding: 22px 14px 16px; border: 2px solid var(--line); cursor: pointer; transition: all .12s; background: var(--card); box-shadow: 4px 4px 0 rgba(0,0,0,.12); display: flex; align-items: center; gap: 12px; margin: 0 16px; }
+.tape-item:nth-child(1) { background: var(--tape-blue); transform: rotate(-1.2deg) translateX(-2px); }
+.tape-item:nth-child(2) { background: var(--tape-green); transform: rotate(1deg) translateX(2px); }
+.tape-item:nth-child(3) { background: var(--tape-yellow); transform: rotate(-.6deg) translateX(-1px); }
+.tape-item:nth-child(4) { background: var(--tape-pink); transform: rotate(.8deg) translateX(1px); }
+.tape-item:hover { transform: scale(1.02) rotate(0deg); box-shadow: 6px 6px 0 rgba(0,0,0,.15); }
+.tape-item:active { transform: scale(.98) rotate(0deg); box-shadow: 2px 2px 0 rgba(0,0,0,.12); }
+
+.tape-item::before { content: ""; position: absolute; top: -10px; left: 14px; width: 72px; height: 18px; opacity: .55; transform: rotate(-1deg); background: repeating-linear-gradient(90deg, rgba(255,255,255,.2) 0, rgba(255,255,255,.2) 4px, transparent 4px, transparent 8px); clip-path: polygon(0 20%, 5% 0, 10% 25%, 15% 5%, 20% 30%, 25% 10%, 30% 35%, 35% 15%, 40% 40%, 45% 20%, 50% 45%, 55% 25%, 60% 50%, 65% 30%, 70% 55%, 75% 35%, 80% 60%, 85% 40%, 90% 65%, 95% 45%, 100% 70%, 100% 100%, 0 100%); }
+.tape-item:nth-child(1)::before { background-color: #B8D4E3; }
+.tape-item:nth-child(2)::before { background-color: #B8D4B8; }
+.tape-item:nth-child(3)::before { background-color: #E8D4A8; }
+.tape-item:nth-child(4)::before { background-color: #E3B8B8; }
+
+.tape-body { flex: 1; }
+.tape-title { font-family: "Ma Shan Zheng", cursive; font-size: 22px; margin-bottom: 4px; color: var(--ink); }
+.tape-desc { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.tape-icon { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; transform: rotate(11deg); opacity: .95; margin-right: -32px; }
+.tape-tear { display: none; }
+
+.journal-stats { display: flex; justify-content: center; gap: 16px; margin-top: 28px; padding: 16px 12px; background: var(--card); border: 2px solid var(--line); box-shadow: 4px 4px 0 rgba(0,0,0,.1); transform: rotate(.5deg); flex-wrap: wrap; }
+
+.clip-row { display: flex; justify-content: center; gap: 16px; margin-top: 24px; }
+
+.about-clip { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; cursor: pointer; opacity: .7; transition: opacity .15s; }
+.about-clip:hover { opacity: 1; }
+.clip-icon { font-size: 18px; }
+.clip-text { font-size: 14px; color: var(--ink-2); font-family: "Ma Shan Zheng", cursive; border-bottom: 1px dashed var(--ink-2); }
+
+.about-scroll { flex: 1; overflow-y: auto; padding: 16px 18px 32px; }
+.about-paper { background: var(--card); border: 3px solid var(--line); padding: 24px 22px 28px; box-shadow: 5px 5px 0 rgba(0,0,0,.1); position: relative; }
+.about-paper::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(90deg, transparent, transparent 6px, var(--line) 6px, var(--line) 12px); opacity: .15; }
+.about-title { font-family: "Ma Shan Zheng", cursive; font-size: 26px; margin-bottom: 18px; color: var(--ink); border-bottom: 2px dashed var(--line); padding-bottom: 10px; }
+.about-body { font-size: 15px; line-height: 1.9; color: var(--ink); }
+.about-body p { margin: 0 0 14px; }
+.about-body a { color: var(--ink-2); text-decoration: underline; text-decoration-style: dashed; }
+.about-body a:hover { color: var(--ink); }
+.about-footer { margin-top: 22px; padding-top: 14px; border-top: 2px dashed var(--line); display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); font-weight: 500; }
+
+.donate-box { margin: 18px auto; padding: 12px; background: var(--paper); border: 2px solid var(--line); text-align: center; box-shadow: 3px 3px 0 rgba(0,0,0,.08); max-width: 200px; transform: rotate(-1deg); }
+.donate-text { font-size: 13px; color: var(--ink-2); margin-bottom: 8px; font-family: "Ma Shan Zheng", cursive; }
+.donate-qr { width: 120px; height: 120px; object-fit: contain; border: 2px solid var(--line); display: block; margin: 0 auto; background: #fff; }
+.donate-fallback { font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+
+.danger-zone { margin-top: 20px; padding: 14px; border: 2px dashed var(--bad); background: #FDF2F2; text-align: center; }
+.danger-btn { padding: 10px 18px; border: 2px solid var(--bad); background: #FDF2F2; color: var(--bad); font-size: 14px; font-weight: 700; cursor: pointer; transition: all .12s; }
+.danger-btn:hover { background: var(--bad); color: #fff; }
+.danger-hint { font-size: 12px; color: var(--bad); margin-top: 8px; opacity: .85; }
+
+/* ===== Import Sheet ===== */
+.import-body { padding: 6px 4px 10px; }
+.import-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.import-label { font-family: "Ma Shan Zheng", cursive; font-size: 16px; color: var(--ink); }
+.import-row input[type="text"],
+.import-row input[type="file"] {
+  padding: 10px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font-size: 14px;
+}
+.import-hint { font-size: 13px; color: var(--ink-2); margin-bottom: 16px; line-height: 1.6; }
+
+/* ===== Lib Menu ===== */
+.lib-menu-body { display: flex; flex-direction: column; gap: 8px; }
+.lib-menu-item { width: 100%; padding: 14px; border: 2px solid var(--line); background: var(--card); font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; transition: all .1s; }
+.lib-menu-item:hover { background: var(--paper-2); }
+.lib-menu-item.danger { color: var(--bad); border-color: var(--bad); background: #FDF2F2; }
+.lib-menu-item.danger:hover { background: var(--bad); color: #fff; }
+
+/* ===== Settings Sheet ===== */
+.settings-sheet { max-height: 80vh; display: flex; flex-direction: column; }
+.settings-body { flex: 1; overflow-y: auto; padding: 6px 2px 10px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 2px dashed var(--line); }
+.settings-row:last-child { border-bottom: none; }
+.settings-name { font-family: "Ma Shan Zheng", cursive; font-size: 18px; color: var(--ink); flex-shrink: 0; }
+.settings-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.settings-chip { padding: 6px 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .1s; }
+.settings-chip:hover { background: var(--paper-2); }
+.settings-chip:active { transform: scale(.96); }
+.settings-chip.active { background: var(--ink); color: var(--card); border-color: var(--ink); box-shadow: 2px 2px 0 rgba(0,0,0,.1); }
+
+/* ===== Font sizes ===== */
+.q-title { font-size: 18px; }
+html[data-font-size="small"] .q-title { font-size: 16px; }
+html[data-font-size="normal"] .q-title { font-size: 18px; }
+html[data-font-size="large"] .q-title { font-size: 20px; }
+html[data-font-size="xlarge"] .q-title { font-size: 22px; }
+
+.opt-txt { font-size: 16px; }
+html[data-font-size="small"] .opt-txt { font-size: 14px; }
+html[data-font-size="normal"] .opt-txt { font-size: 16px; }
+html[data-font-size="large"] .opt-txt { font-size: 18px; }
+html[data-font-size="xlarge"] .opt-txt { font-size: 20px; }
+
+.q-badge { font-size: 12px; }
+html[data-font-size="small"] .q-badge { font-size: 11px; }
+html[data-font-size="normal"] .q-badge { font-size: 12px; }
+html[data-font-size="large"] .q-badge { font-size: 13px; }
+html[data-font-size="xlarge"] .q-badge { font-size: 14px; }
+
+.feedback-note { font-size: 15px; }
+html[data-font-size="small"] .feedback-note { font-size: 13px; }
+html[data-font-size="normal"] .feedback-note { font-size: 15px; }
+html[data-font-size="large"] .feedback-note { font-size: 17px; }
+html[data-font-size="xlarge"] .feedback-note { font-size: 19px; }
+
+.settings-label { font-size: 20px; }
+html[data-font-size="small"] .settings-label { font-size: 18px; }
+html[data-font-size="normal"] .settings-label { font-size: 20px; }
+html[data-font-size="large"] .settings-label { font-size: 22px; }
+html[data-font-size="xlarge"] .settings-label { font-size: 24px; }
+
+/* ===== Font families ===== */
+html[data-font-family="handwriting"] body { font-family: "Ma Shan Zheng", cursive; }
+html[data-font-family="wenkai"] body { font-family: "LXGW WenKai", "Noto Sans SC", sans-serif; }
+html[data-font-family="serif"] body { font-family: "Noto Serif SC", "Noto Sans SC", serif; }
+.stat-unit { text-align: center; }
+.stat-num { display: block; font-family: "Ma Shan Zheng", cursive; font-size: 28px; color: var(--ink); }
+.stat-label { font-size: 11px; color: var(--ink-2); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+
+/* ===== Top bar ===== */
+.top-bar { flex: 0 0 auto; padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); background: var(--paper); }
+.back-btn { font-size: 15px; color: var(--ink-2); background: none; border: none; cursor: pointer; font-family: "Ma Shan Zheng", cursive; font-weight: 500; }
+.nav-title { font-size: 15px; color: var(--ink-2); font-family: "Ma Shan Zheng", cursive; font-weight: 500; }
+.nav-page { font-size: 14px; color: var(--ink-2); font-weight: 700; font-family: "Ma Shan Zheng", cursive; }
+
+/* ===== Progress ===== */
+.raw-progress { padding: 0 16px 10px; }
+.raw-line { height: 4px; background: transparent; position: relative; overflow: hidden; }
+.raw-line::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--line) 0, var(--line) 8px, transparent 8px, transparent 12px); opacity: .25; }
+.raw-line .fill { height: 100%; background: var(--line); width: 0%; transition: width .4s ease; position: relative; }
+.raw-line .fill::after { content: "▶"; position: absolute; right: -2px; top: -7px; font-size: 10px; color: var(--line); }
+.raw-text { font-size: 12px; color: var(--ink-2); margin-top: 8px; text-align: right; font-family: "Ma Shan Zheng", cursive; font-weight: 500; }
+
+/* ===== Stage ===== */
+.stage { flex: 1; overflow: hidden; position: relative; padding: 10px 16px; }
+.note-track { position: absolute; inset: 10px 16px 8px; transition: transform .3s ease; }
+.note-track.slide-next { animation: paperNext var(--anim-dur, .4s) cubic-bezier(.25,.8,.25,1); }
+.note-track.slide-prev { animation: paperPrev var(--anim-dur, .4s) cubic-bezier(.25,.8,.25,1); }
+@keyframes paperNext { 0% { transform: translateX(var(--anim-translate, 30px)) rotate(var(--anim-rotate, 3deg)); opacity: .7; } 60% { transform: translateX(-4px) rotate(calc(var(--anim-rotate, 3deg) * -0.3)); opacity: 1; } 100% { transform: translateX(0) rotate(0); opacity: 1; } }
+@keyframes paperPrev { 0% { transform: translateX(calc(var(--anim-translate, 30px) * -1)) rotate(calc(var(--anim-rotate, 3deg) * -1)); opacity: .7; } 60% { transform: translateX(4px) rotate(calc(var(--anim-rotate, 3deg) * 0.3)); opacity: 1; } 100% { transform: translateX(0) rotate(0); opacity: 1; } }
+
+.note-card { background: var(--card); border: 3px solid var(--line); padding: 22px 18px 26px; height: 100%; overflow-y: auto; box-shadow: 5px 5px 0 rgba(0,0,0,.1); position: relative; }
+.note-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(90deg, transparent, transparent 6px, var(--line) 6px, var(--line) 12px); opacity: .15; }
+
+.feedback-link { font-size: 13px; color: var(--ink-2); cursor: pointer; font-family: "Ma Shan Zheng", cursive; transition: color .15s; font-weight: 500; }
+.feedback-link:hover { color: var(--ink); text-decoration: underline; }
+
+.blank-line { display: inline-block; width: 3.2em; height: .5em; border-bottom: 2px solid var(--ink); vertical-align: baseline; margin: 0 3px; }
+
+.q-title { font-size: 18px; font-weight: 500; line-height: 1.85; margin: 6px 0 16px; color: var(--ink); }
+.q-badge { display: inline-block; font-size: 12px; color: #fff; background: var(--ink); padding: 4px 12px; font-weight: 500; margin-bottom: 14px; }
+.q-badge.judge { background: var(--ink-2); }
+
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt-note { display: flex; align-items: center; gap: 12px; padding: 14px 10px; border: 2px solid var(--line); cursor: pointer; transition: all .12s; background: var(--paper); }
+.opt-note:hover { background: var(--paper-2); }
+.opt-note.selected { background: var(--highlight); border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,.08); transform: translateY(-1px); }
+.opt-note:active { transform: translateY(1px) scale(.995); box-shadow: 1px 1px 0 rgba(0,0,0,.08); }
+.opt-note.correct { background: var(--tape-green); border-color: var(--ok); }
+.opt-note.wrong { background: var(--tape-pink); border-color: var(--bad); animation: wiggle .35s; }
+@keyframes wiggle { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-2deg)} 40%{transform:rotate(2deg)} 60%{transform:rotate(-1deg)} 80%{transform:rotate(1deg)} }
+
+.opt-circle { width: 28px; height: 28px; border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; transition: all .15s; font-family: "Ma Shan Zheng", cursive; }
+.opt-note.selected .opt-circle { border-color: var(--line); background: var(--line); color: var(--card); }
+.opt-note.correct .opt-circle { border-color: var(--ok); background: var(--ok); color: #fff; }
+.opt-note.wrong .opt-circle { border-color: var(--bad); background: var(--bad); color: #fff; }
+.opt-txt { flex: 1; font-size: 16px; line-height: 1.65; font-weight: 500; }
+
+.stamp { margin-left: 6px; font-family: "Ma Shan Zheng", cursive; font-size: 18px; opacity: 0; transform: scale(.8); transition: all .2s; font-weight: 400; }
+.opt-note.correct .stamp.ok { opacity: 1; transform: scale(1) rotate(-10deg); color: var(--ok); }
+.opt-note.wrong .stamp.bad { opacity: 1; transform: scale(1) rotate(8deg); color: var(--bad); }
+
+.feedback-note { margin-top: 16px; padding: 10px 14px; font-size: 15px; font-weight: 500; display: none; animation: popIn .2s ease; font-family: "Ma Shan Zheng", cursive; border: 2px solid transparent; }
+.feedback-note.show { display: block; }
+.feedback-note.ok { background: var(--tape-green); color: var(--ok); border-color: var(--ok); }
+.feedback-note.bad { background: var(--tape-pink); color: var(--bad); border-color: var(--bad); }
+@keyframes popIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ===== Footer ===== */
+.raw-footer { flex: 0 0 auto; padding: 12px 16px 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid var(--line); background: var(--card); }
+.raw-btn { padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .1s; border: 2px solid var(--line); background: var(--card); color: var(--ink); font-family: "Noto Sans SC", sans-serif; }
+.raw-btn:hover { background: var(--paper-2); }
+.raw-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+.raw-btn:disabled { opacity: .35; cursor: not-allowed; transform: none; box-shadow: none; }
+.raw-btn.prime { background: var(--line); color: var(--card); border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,.15); }
+.raw-btn.prime:hover { opacity: .9; }
+.sheet-btn { font-size: 13px; color: var(--ink-2); background: var(--paper); border: 2px solid var(--line); padding: 8px 14px; cursor: pointer; font-weight: 600; }
+.sheet-btn:hover { background: var(--paper-2); }
+
+/* ===== Exam dots ===== */
+.dot-bar { flex: 0 0 auto; padding: 8px 14px 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; border-top: 2px solid var(--line); background: var(--card); }
+.edot { display: inline-block; width: 30px; height: 30px; line-height: 26px; text-align: center; font-size: 12px; margin: 0 3px; border: 2px solid var(--line); color: var(--ink-2); cursor: pointer; font-weight: 700; transition: all .1s; }
+.edot:hover { background: var(--paper-2); }
+.edot.active { border-color: var(--line); color: var(--line); background: var(--highlight); }
+.edot.done { background: var(--ok); color: #fff; border-color: var(--ok); }
+
+/* ===== Sheet ===== */
+.sheet-overlay { position: fixed; inset: 0; background: rgba(26,26,26,.25); opacity: 0; pointer-events: none; transition: opacity .25s, backdrop-filter .25s; z-index: 150; -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px); }
+.sheet-overlay.show { opacity: 1; pointer-events: auto; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.sheet-note { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 3px solid var(--line); padding: 18px 16px 28px; transform: translateY(100%); transition: transform .3s ease; z-index: 160; max-height: 72vh; display: flex; flex-direction: column; box-shadow: 0 -6px 0 rgba(0,0,0,.08); }
+.sheet-note.show { transform: translateY(0); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sheet-head h3 { margin: 0; font-family: "Ma Shan Zheng", cursive; font-size: 22px; }
+.sheet-close { width: 34px; height: 34px; border: 2px solid var(--line); background: none; font-size: 16px; color: var(--ink-2); cursor: pointer; font-weight: 700; }
+.sheet-hint { font-size: 12px; color: var(--ink-2); margin-bottom: 14px; display: flex; gap: 14px; font-weight: 500; }
+.sheet-hint span { display: inline-flex; align-items: center; gap: 6px; }
+.dot-s { width: 10px; height: 10px; border: 2px solid var(--line); }
+.sheet-scroll { overflow-y: auto; }
+.sheet-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.sheet-num { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border: 2px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; transition: all .1s; }
+.sheet-num:hover { background: var(--paper-2); }
+.sheet-num.current { border-color: var(--line); color: var(--line); background: var(--highlight); box-shadow: 3px 3px 0 rgba(0,0,0,.1); }
+.sheet-num.right { background: var(--tape-green); color: var(--ok); border-color: var(--ok); }
+.sheet-num.wrong { background: var(--tape-pink); color: var(--bad); border-color: var(--bad); }
+
+/* ===== Result ===== */
+.result-scroll { flex: 1; overflow-y: auto; padding: 18px 16px 32px; }
+.result-note { background: var(--card); border: 3px solid var(--line); padding: 28px 20px; text-align: center; margin-bottom: 18px; position: relative; box-shadow: 5px 5px 0 rgba(0,0,0,.1); }
+.result-note::after { content: "✎"; position: absolute; top: 10px; right: 14px; font-size: 18px; color: var(--ink-2); opacity: .25; }
+.result-score { font-family: "Ma Shan Zheng", cursive; font-size: 48px; color: var(--ink); line-height: 1; }
+.result-tag { display: inline-block; margin-top: 12px; font-size: 18px; font-family: "Ma Shan Zheng", cursive; padding: 6px 16px; border: 2px solid transparent; }
+.result-tag.ok { background: var(--tape-green); color: var(--ok); border-color: var(--ok); }
+.result-tag.bad { background: var(--tape-pink); color: var(--bad); border-color: var(--bad); }
+.result-meta { margin-top: 18px; display: flex; justify-content: center; gap: 16px; font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.result-meta span { position: relative; }
+.result-meta span:not(:last-child)::after { content: "/"; position: absolute; right: -12px; top: -1px; color: var(--line); font-weight: 700; }
+
+.result-btns { display: flex; gap: 10px; margin-bottom: 18px; }
+.result-btns button { flex: 1; }
+.raw-btn { padding: 12px 16px; border: 2px solid var(--line); background: var(--card); color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; transition: all .1s; }
+.raw-btn:hover { background: var(--paper-2); }
+.raw-btn.prime { background: var(--line); color: var(--card); border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,.15); }
+.raw-btn.prime:hover { opacity: .9; }
+
+.review-title { font-family: "Ma Shan Zheng", cursive; font-size: 20px; color: var(--ink-2); }
+.review-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.review-batch-btn { padding: 8px 14px; border: 2px solid var(--line); background: var(--card); color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 2px 2px 0 rgba(0,0,0,.1); transition: all .1s; }
+.review-batch-btn:hover { opacity: .9; }
+.review-batch-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.review-item { border-bottom: 2px dashed var(--line); padding: 12px 0; }
+.review-item:last-child { border-bottom: none; }
+.review-header { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none; }
+.review-no { font-size: 12px; font-weight: 700; color: var(--ink-2); min-width: 22px; padding-top: 2px; }
+.review-ans { font-size: 12px; font-weight: 700; min-width: 36px; padding-top: 2px; }
+.review-ans.ok { color: var(--ok); }
+.review-ans.bad { color: var(--bad); }
+.review-txt { flex: 1; font-size: 15px; line-height: 1.65; font-weight: 500; }
+.review-toggle { margin-left: auto; font-size: 12px; color: var(--ink-2); transition: transform .25s; padding-top: 4px; }
+.review-item.expanded .review-toggle { transform: rotate(180deg); }
+
+.review-body { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .3s ease, opacity .25s ease; }
+.review-item.expanded .review-body { max-height: 600px; opacity: 1; }
+.review-body-inner { padding-top: 12px; }
+.review-opt { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed rgba(0,0,0,.1); }
+.review-item:last-child .review-opt:last-child { border-bottom: none; }
+.review-opt-key { min-width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.review-opt.ok .review-opt-key { background: var(--ok); color: #fff; border-color: var(--ok); }
+.review-opt.bad .review-opt-key { background: var(--bad); color: #fff; border-color: var(--bad); }
+.review-opt-txt { flex: 1; font-size: 14px; line-height: 1.6; padding-top: 2px; }
+
+.review-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--line); }
+.review-correct { font-size: 13px; font-weight: 700; color: var(--ok); }
+.review-add-btn { padding: 6px 12px; border: 2px solid var(--line); background: var(--card); font-size: 13px; font-weight: 700; cursor: pointer; }
+.review-add-btn.added { background: var(--line); color: var(--card); cursor: not-allowed; opacity: .7; }
+
+.empty { text-align: center; padding: 40px 20px; color: var(--ink-2); }
+.empty-icon { font-size: 48px; margin-bottom: 10px; display: block; }
+
+/* ===== Modal ===== */
+.modal-overlay { position: fixed; inset: 0; background: rgba(26,26,26,.35); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; opacity: 0; transition: opacity .2s, backdrop-filter .2s; -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px); }
+.modal-overlay.show { display: flex; opacity: 1; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.modal-note { background: var(--card); border: 3px solid var(--line); padding: 22px; width: 100%; max-width: 300px; transform: scale(.96); transition: transform .2s; box-shadow: 6px 6px 0 rgba(0,0,0,.15); }
+.modal-overlay.show .modal-note { transform: scale(1); }
+.modal-title { font-family: "Ma Shan Zheng", cursive; font-size: 22px; margin-bottom: 6px; color: var(--ink); }
+.modal-text { font-size: 14px; color: var(--ink-2); line-height: 1.6; margin-bottom: 16px; font-weight: 500; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-sm { padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; border: 2px solid var(--line); background: var(--paper); color: var(--ink); transition: all .1s; }
+.btn-sm:hover { background: var(--paper-2); }
+.btn-sm.prime { background: var(--line); color: var(--card); border-color: var(--line); box-shadow: 2px 2px 0 rgba(0,0,0,.1); }
+
+/* ===== Exam card matrix ===== */
+.card-panel { padding: 18px 16px 22px; }
+.card-hint { font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; gap: 14px; font-weight: 500; }
+.card-count { font-size: 13px; color: var(--ink-2); margin-bottom: 12px; font-family: "Ma Shan Zheng", cursive; }
+.card-btns { display: flex; gap: 10px; margin-top: 16px; }
+.card-btns button { flex: 1; }
+
+/* ===== Exam Config Sheet ===== */
+.config-body { padding: 6px 4px 10px; }
+.config-label { font-family: "Ma Shan Zheng", cursive; font-size: 18px; margin-bottom: 10px; color: var(--ink); }
+.config-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.config-chip { padding: 10px 16px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font-size: 14px; font-weight: 600; cursor: pointer; transition: all .1s; }
+.config-chip:hover { background: var(--paper-2); }
+.config-chip.active { background: var(--ink); color: var(--card); border-color: var(--ink); box-shadow: 2px 2px 0 rgba(0,0,0,.1); }
+.config-custom { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; color: var(--ink-2); }
+.config-custom input { width: 70px; padding: 8px 10px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font-size: 15px; font-weight: 600; text-align: center; }
+.config-info { font-size: 13px; color: var(--ink-2); margin-bottom: 16px; font-family: "Ma Shan Zheng", cursive; }
+.config-start { width: 100%; padding: 14px; border: 2px solid var(--line); background: var(--ink); color: var(--card); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,.15); transition: all .1s; }
+.config-start:hover { opacity: .9; }
+.config-start:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,.1); }

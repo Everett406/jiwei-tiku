@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1A1A1A">
+<title>积微 · 积累微小的进步</title>
+<link rel="stylesheet" href="css/base.css?v=21">
+<link rel="stylesheet" href="css/components.css?v=21">
+<link rel="stylesheet" href="css/utils.css?v=21">
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div id="app">
+  <!-- ==================== HOME (Library List) ==================== -->
+  <div id="page-home" class="page active">
+    <div class="home-scroll">
+      <header class="journal-header">
+        <button class="theme-btn" id="settings-btn" onclick="openSettingsPage()">⚙</button>
+        <div class="journal-title-row">
+          <h1>积微</h1>
+        </div>
+        <p>积累微小的进步</p>
+      </header>
+      <div class="washi-strip"></div>
+      <div class="import-bar">
+        <button class="import-btn" onclick="openImportSheet()">+ 导入题库</button>
+        <button class="import-btn secondary" onclick="showPage('page-template-guide')">题库模板</button>
+      </div>
+
+      <div id="lib-list" class="lib-list">
+        <div class="empty"><span class="empty-icon">📚</span><p>暂无题库，点击上方导入</p></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== LIBRARY HOME ==================== -->
+  <div id="page-lib" class="page">
+    <div class="home-scroll">
+      <header class="journal-header">
+        <button class="theme-btn" style="left:0;right:auto" onclick="goHome()">‹</button>
+        <div class="journal-title-row" style="justify-content:center">
+          <h1 id="lib-title" style="font-size:28px;padding:8px 14px">题库</h1>
+        </div>
+        <p>共 <b id="lib-stat-total">0</b> 题 · 已收录 <b id="lib-stat-wrong">0</b> 道错题</p>
+      </header>
+      <div class="washi-strip"></div>
+      <nav class="tape-grid">
+        <div class="tape-item" onclick="openPracticeConfig('sequence')">
+          <div class="tape-body">
+            <div class="tape-title">顺序刷题</div>
+            <div class="tape-desc">按原题顺序系统学习</div>
+          </div>
+          <img class="tape-icon" src="images/tape-sequence.webp" alt="">
+        </div>
+        <div class="tape-item" onclick="openPracticeConfig('random')">
+          <div class="tape-body">
+            <div class="tape-title">随机刷题</div>
+            <div class="tape-desc">打乱顺序模拟实战</div>
+          </div>
+          <img class="tape-icon" src="images/tape-random.webp" alt="">
+        </div>
+        <div class="tape-item" onclick="openExamConfig()">
+          <div class="tape-body">
+            <div class="tape-title">模拟考试</div>
+            <div class="tape-desc">自定义题数 · 80分及格</div>
+          </div>
+          <img class="tape-icon" src="images/tape-exam.webp" alt="">
+        </div>
+        <div class="tape-item" onclick="openWrongConfig()">
+          <div class="tape-body">
+            <div class="tape-title">错题本</div>
+            <div class="tape-desc">针对薄弱点重点突破</div>
+          </div>
+          <img class="tape-icon" src="images/tape-wrong.webp" alt="">
+        </div>
+      </nav>
+      <div class="journal-stats">
+        <div class="stat-unit"><span class="stat-num" id="lib-stat-done">0</span><span class="stat-label">已做题</span></div>
+        <div class="stat-unit"><span class="stat-num" id="lib-stat-rate">0%</span><span class="stat-label">正确率</span></div>
+        <div class="stat-unit"><span class="stat-num" id="lib-stat-wrong-bottom">0</span><span class="stat-label">错题</span></div>
+        <div class="stat-unit"><span class="stat-num" id="lib-stat-last-exam">--</span><span class="stat-label">上次成绩</span></div>
+        <div class="stat-unit"><span class="stat-num" id="lib-stat-pass-rate">--</span><span class="stat-label">考试通过率</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRACTICE ==================== -->
+  <div id="page-practice" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goLibHome()">‹ 返回</button>
+      <div class="nav-title" id="practice-title">顺序刷题</div>
+      <div class="nav-page"><span id="practice-page">1 / 800</span> · <span class="feedback-link" onclick="openFeedback()">反馈</span></div>
+    </div>
+    <div class="raw-progress">
+      <div class="raw-line"><div class="fill" id="practice-progress"></div></div>
+      <div class="raw-text" id="practice-accuracy">正确率 --</div>
+    </div>
+    <div class="stage">
+      <div class="note-track" id="practice-track">
+        <div class="note-card">
+          <div class="q-title" id="q-title">题目</div>
+          <div class="q-badge" id="q-type">单选题</div>
+          <div class="opts" id="q-options"></div>
+          <div class="feedback-note" id="q-feedback"></div>
+        </div>
+      </div>
+    </div>
+    <div class="raw-footer">
+      <button class="raw-btn" id="btn-prev" onclick="prevQuestion()">上一题</button>
+      <button class="sheet-btn" onclick="openSheet()">题号 ⊞</button>
+      <button class="raw-btn prime" id="btn-next" onclick="nextQuestion()">下一题 ›</button>
+    </div>
+  </div>
+
+  <!-- ==================== EXAM ==================== -->
+  <div id="page-exam" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="showModal('confirm-exit')">‹ 退出</button>
+      <div class="nav-title">模拟考试</div>
+      <div class="nav-page"><span style="color:var(--bad); font-weight:600" id="exam-timer">45:00</span> · <span class="feedback-link" onclick="openFeedback()">反馈</span></div>
+    </div>
+    <div class="raw-progress">
+      <div class="raw-line"><div class="fill" id="exam-progress"></div></div>
+      <div class="raw-text" id="exam-progress-text">已答 0 / 50</div>
+    </div>
+    <div class="stage">
+      <div class="note-track" id="exam-track">
+        <div class="note-card">
+          <div class="q-title" id="exam-title">题目</div>
+          <div class="q-badge" id="exam-type">单选题</div>
+          <div class="opts" id="exam-options"></div>
+        </div>
+      </div>
+    </div>
+    <div class="dot-bar" id="exam-dots"></div>
+    <div class="raw-footer">
+      <button class="raw-btn" onclick="prevExam()">上一题</button>
+      <button class="raw-btn prime" style="background:var(--bad);border-color:var(--bad)" onclick="submitExam()">交卷</button>
+      <button class="raw-btn" onclick="nextExam()">下一题 ›</button>
+    </div>
+    <!-- 考试答题卡矩阵 -->
+    <div class="sheet-overlay" id="card-overlay" onclick="closeExamCard()"></div>
+    <div class="sheet-note card-panel" id="card-panel">
+      <div class="sheet-head">
+        <h3>答题卡</h3>
+        <button class="sheet-close" onclick="closeExamCard()">✕</button>
+      </div>
+      <div class="card-hint">
+        <span><span class="dot-s" style="background:var(--ok);border-color:var(--ok)"></span> 已答</span>
+        <span><span class="dot-s" style="background:var(--paper);border-color:var(--line-dash)"></span> 未答</span>
+      </div>
+      <div class="card-count" id="card-count"></div>
+      <div class="sheet-scroll">
+        <div class="sheet-grid" id="card-grid"></div>
+      </div>
+      <div class="card-btns">
+        <button class="raw-btn" onclick="closeExamCard()">继续答题</button>
+        <button class="raw-btn prime" style="background:var(--bad);border-color:var(--bad)" onclick="doSubmit()">直接交卷</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ABOUT ==================== -->
+  <div id="page-about" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">‹ 返回</button>
+      <div class="nav-title">关于</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="about-scroll">
+      <div class="about-paper">
+        <div class="about-title">关于积微</div>
+        <div class="about-body">
+          <p><strong>积微</strong>，取自"积累微小"。我们相信，每一次微小的努力，都会在某个时刻连成一条通往远方的路。</p>
+          <p>这是一个简单纯粹的刷题工具，支持导入 JSON 和 Excel 格式的题库。无论你是备考证书、复习课程，还是日常积累，都可以把题目带在身边，随时做上几道。</p>
+          <p>如果你发现题目有误，或者有什么想加的功能，可以点页面上的「<a href="#" onclick="openFeedback();return false;">反馈</a>」告诉我。</p>
+          <p>人生没有白走的路，每一步都算数。</p>
+        </div>
+        <div class="donate-box">
+          <div class="donate-text">☕ 觉得有用？请作者喝杯瑞幸吧 ~</div>
+          <img src="images/收款码.png" alt="收款码" class="donate-qr" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div class="donate-fallback" style="display:none">（收款码图片未放置）</div>
+        </div>
+        <div class="danger-zone">
+          <button class="danger-btn" onclick="onClearAll()">清除所有数据</button>
+          <div class="danger-hint">这会清空所有题库、做题进度、错题记录和设置，且无法恢复。</div>
+        </div>
+        <div class="about-footer">
+          <span>版本：v2.0</span>
+          <span>积微 · 通用题库</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SETTINGS ==================== -->
+  <div id="page-settings" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">‹ 返回</button>
+      <div class="nav-title">设置</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="about-scroll">
+      <div class="about-paper">
+        <div class="settings-body">
+          <div class="settings-row">
+            <div class="settings-name">主题</div>
+            <div class="settings-chips" id="theme-options">
+              <button class="settings-chip" data-val="system" onclick="setSetting('theme','system')">跟随</button>
+              <button class="settings-chip" data-val="light" onclick="setSetting('theme','light')">亮</button>
+              <button class="settings-chip" data-val="dark" onclick="setSetting('theme','dark')">暗</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-name">字体</div>
+            <div class="settings-chips" id="font-options">
+              <button class="settings-chip" data-val="default" onclick="setSetting('fontFamily','default')">默认</button>
+              <button class="settings-chip" data-val="handwriting" onclick="setSetting('fontFamily','handwriting')">手写</button>
+              <button class="settings-chip" data-val="wenkai" onclick="setSetting('fontFamily','wenkai')">楷体</button>
+              <button class="settings-chip" data-val="serif" onclick="setSetting('fontFamily','serif')">宋体</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-name">字号</div>
+            <div class="settings-chips" id="size-options">
+              <button class="settings-chip" data-val="small" onclick="setSetting('fontSize','small')">A-</button>
+              <button class="settings-chip" data-val="normal" onclick="setSetting('fontSize','normal')">A</button>
+              <button class="settings-chip" data-val="large" onclick="setSetting('fontSize','large')">A+</button>
+              <button class="settings-chip" data-val="xlarge" onclick="setSetting('fontSize','xlarge')">A++</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-name">自动切题</div>
+            <div class="settings-chips" id="auto-options">
+              <button class="settings-chip" data-val="true" onclick="setSetting('autoNext',true)">开</button>
+              <button class="settings-chip" data-val="false" onclick="setSetting('autoNext',false)">关</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-name">动画速度</div>
+            <div class="settings-chips" id="speed-options">
+              <button class="settings-chip" data-val="slow" onclick="setSetting('animSpeed','slow')">慢</button>
+              <button class="settings-chip" data-val="normal" onclick="setSetting('animSpeed','normal')">标准</button>
+              <button class="settings-chip" data-val="fast" onclick="setSetting('animSpeed','fast')">快</button>
+            </div>
+          </div>
+          <div class="settings-row" onclick="showAbout()" style="cursor:pointer">
+            <div class="settings-name">关于积微</div>
+            <div class="settings-chips" style="pointer-events:none">
+              <span style="font-size:13px;color:var(--ink-2)">版本 v2.1 ›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 考试配置浮层 -->
+  <div class="sheet-overlay" id="exam-config-overlay" onclick="closeExamConfig()"></div>
+  <div class="sheet-note" id="exam-config-sheet">
+    <div class="sheet-head">
+      <h3>模拟考试设置</h3>
+      <button class="sheet-close" onclick="closeExamConfig()">✕</button>
+    </div>
+    <div class="config-body">
+      <div class="config-label">选择题数</div>
+      <div class="config-presets">
+        <button class="config-chip" onclick="setExamCount(20)">20题</button>
+        <button class="config-chip" onclick="setExamCount(50)">50题</button>
+        <button class="config-chip" onclick="setExamCount(80)">80题</button>
+        <button class="config-chip" onclick="setExamCount(100)">100题</button>
+      </div>
+      <div class="config-custom">
+        <span>自定义</span>
+        <input type="number" id="exam-custom-count" min="5" max="800" value="50" onchange="updateCustomCount()">
+        <span>题</span>
+      </div>
+      <div class="config-info" id="exam-config-info">判断题约 0 道 · 单选题约 0 道</div>
+      <button class="config-start" onclick="confirmStartExam()">开始考试</button>
+    </div>
+  </div>
+
+  <!-- 练习配置浮层 -->
+  <div class="sheet-overlay" id="practice-config-overlay" onclick="closePracticeConfig()"></div>
+  <div class="sheet-note" id="practice-config-sheet">
+    <div class="sheet-head">
+      <h3 id="practice-config-title">练习设置</h3>
+      <button class="sheet-close" onclick="closePracticeConfig()">✕</button>
+    </div>
+    <div class="config-body">
+      <div class="config-label">题目类型</div>
+      <div class="config-presets">
+        <button class="config-chip" data-val="all" onclick="setPracticeFilter('all')">全部</button>
+        <button class="config-chip" data-val="judge" onclick="setPracticeFilter('judge')">仅判断题</button>
+        <button class="config-chip" data-val="choice" onclick="setPracticeFilter('choice')">仅选择题</button>
+      </div>
+      <div class="config-info" id="practice-config-info">共 0 题</div>
+      <button class="config-start" onclick="confirmStartPractice()">开始练习</button>
+    </div>
+  </div>
+
+  <!-- 错题本配置浮层 -->
+  <div class="sheet-overlay" id="wrong-config-overlay" onclick="closeWrongConfig()"></div>
+  <div class="sheet-note" id="wrong-config-sheet">
+    <div class="sheet-head">
+      <h3>错题本设置</h3>
+      <button class="sheet-close" onclick="closeWrongConfig()">✕</button>
+    </div>
+    <div class="config-body">
+      <div class="config-label">复习模式</div>
+      <div class="config-presets">
+        <button class="config-chip" data-val="remove" onclick="setWrongMode('remove')">刷错题（答对移除）</button>
+        <button class="config-chip" data-val="view" onclick="setWrongMode('view')">仅看错题（不移除）</button>
+      </div>
+      <div class="config-info" id="wrong-config-info">答对后自动移出错题本，可用于反复巩固。</div>
+      <button class="config-start" onclick="confirmStartWrong()">开始复习</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT ==================== -->
+  <div id="page-result" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goLibHome()">‹ 返回</button>
+      <div class="nav-title">考试结果</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="result-scroll">
+      <div class="result-note">
+        <div class="result-score" id="score-value">0</div>
+        <div class="result-tag" id="score-tag">不及格</div>
+        <div class="result-meta">
+          <span>满分 100</span>
+          <span>及格线 80</span>
+          <span id="score-detail">答对 0 / 50</span>
+        </div>
+      </div>
+      <div class="result-btns">
+        <button class="raw-btn" onclick="goLibHome()">返回首页</button>
+        <button class="raw-btn prime" onclick="startExam()">再考一次</button>
+      </div>
+      <div id="review-list"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET ==================== -->
+  <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+  <div class="sheet-note" id="sheet">
+    <div class="sheet-head">
+      <h3>题目导航</h3>
+      <button class="sheet-close" onclick="closeSheet()">✕</button>
+    </div>
+    <div class="sheet-hint">
+      <span><span class="dot-s" style="background:var(--paper);border:1.5px dashed var(--line-dash)"></span> 未答</span>
+      <span><span class="dot-s" style="background:#E8F3E8;border:1.5px solid var(--ok)"></span> 正确</span>
+      <span><span class="dot-s" style="background:var(--tape-pink);border:1.5px solid var(--bad)"></span> 错误</span>
+      <span><span class="dot-s" style="border:1.5px solid var(--ink-2);background:var(--highlight)"></span> 当前</span>
+    </div>
+    <div class="sheet-scroll">
+      <div class="sheet-grid" id="sheet-grid"></div>
+    </div>
+  </div>
+
+  <!-- ==================== IMPORT SHEET ==================== -->
+  <div class="sheet-overlay" id="import-overlay" onclick="closeImportSheet()"></div>
+  <div class="sheet-note" id="import-sheet">
+    <div class="sheet-head">
+      <h3>导入题库</h3>
+      <button class="sheet-close" onclick="closeImportSheet()">✕</button>
+    </div>
+    <div class="import-body">
+      <div class="import-row">
+        <label class="import-label">选择文件</label>
+        <div class="file-picker" id="file-picker" onclick="document.getElementById('import-file').click()">
+          <span id="file-picker-text">点击选择 JSON 或 Excel 文件</span>
+        </div>
+        <input type="file" id="import-file" accept=".json,.xlsx,.xls,.et,.csv" onchange="onImportFileChange()" style="display:none">
+      </div>
+      <div class="import-row">
+        <label class="import-label">题库名称</label>
+        <input type="text" id="import-name" placeholder="请输入题库名称">
+      </div>
+      <div class="import-hint" id="import-hint">支持 JSON 或 Excel (.xlsx) 格式，Excel 请使用下方模板</div>
+      <button class="config-start" onclick="doImport()">确认导入</button>
+    </div>
+  </div>
+
+  <!-- ==================== TEMPLATE GUIDE ==================== -->
+  <div id="page-template-guide" class="page">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">‹ 返回</button>
+      <div class="nav-title">题库模板</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="about-scroll">
+      <div class="about-paper">
+        <div class="template-guide-section">
+          <div class="template-guide-title">🤖 AI 辅助导入</div>
+          <p class="template-guide-text">如果你有 PDF、Word、Excel 或截图格式的题库素材，把下面这段提示词复制给 AI（Kimi、ChatGPT、豆包、Claude 等），AI 会帮你整理成可导入的标准格式。</p>
+          <div class="prompt-box">
+            <pre id="prompt-text">你是一位专业的题库整理助手。我会发给你一份题库素材（可能是 PDF、Word、Excel、图片或截图），请你帮我把它转换成标准格式，方便导入刷题软件。
+
+目前只支持单选题和判断题。如果素材里有填空题或多选题，请跳过不处理。
+
+请任选以下一种输出格式：
+
+【格式一：JSON】
+返回一个标准 JSON 数组，每个题目包含：
+- id：题号（从 1 开始递增）
+- question：题干文本（不要带题号前缀）
+- answer：正确答案字母，必须大写（如 A、B、C）
+- options：选项数组，每项包含 key（A/B/C...）和 text（选项内容）
+
+示例结构：
+[
+  {
+    "id": 1,
+    "question": "人为差错主要是指？",
+    "answer": "A",
+    "options": [
+      {"key": "A", "text": "人的行为结果超出了可接受的界限"},
+      {"key": "B", "text": "人所犯的任何错误"},
+      {"key": "C", "text": "有的人故意为之"}
+    ]
+  }
+]
+
+注意：
+1. 判断题请统一用两个选项：A=正确/对/是，B=错误/错/否。
+2. 确保 JSON 格式合法，不要带 markdown 代码块标记，直接输出纯 JSON 文本。
+3. 如果题干里有无法识别的图片或表格，请在对应位置标注【图片】。
+
+【格式二：填充好的 Excel】
+如果你直接给我填充好的 .xlsx 文件也可以。请使用以下 7 列顺序：
+第 1 列：题干
+第 2 列：选项 A
+第 3 列：选项 B
+第 4 列：选项 C
+第 5 列：选项 D
+第 6 列：选项 E（没有则留空）
+第 7 列：答案（填字母，如 A、B）</pre>
+          </div>
+          <button class="config-start" onclick="copyPrompt()">复制提示词</button>
+        </div>
+        <div class="template-guide-section">
+          <div class="template-guide-title">📋 Excel 模板下载</div>
+          <p class="template-guide-text">也可以下载空白模板，手动填写后导入。请严格使用以下 7 列格式：</p>
+          <div class="template-format">
+            <div class="template-col"><span>1</span>题干</div>
+            <div class="template-col"><span>2</span>选项 A</div>
+            <div class="template-col"><span>3</span>选项 B</div>
+            <div class="template-col"><span>4</span>选项 C</div>
+            <div class="template-col"><span>5</span>选项 D</div>
+            <div class="template-col"><span>6</span>选项 E</div>
+            <div class="template-col"><span>7</span>答案</div>
+          </div>
+          <p class="template-guide-text" style="color:var(--ink-2);font-size:13px">判断题只需填 A/B 两列，答案填"正确/错误"或"A/B"；单选题按实际选项数填写即可。</p>
+          <button class="config-start secondary" onclick="downloadTemplate()">下载 Excel 模板</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIBRARY MENU SHEET ==================== -->
+  <div class="sheet-overlay" id="lib-menu-overlay" onclick="closeLibMenu()"></div>
+  <div class="sheet-note" id="lib-menu-sheet">
+    <div class="sheet-head">
+      <h3 id="lib-menu-title">题库管理</h3>
+      <button class="sheet-close" onclick="closeLibMenu()">✕</button>
+    </div>
+    <div class="lib-menu-body">
+      <button class="lib-menu-item" onclick="renameCurrentLib()">重命名</button>
+      <button class="lib-menu-item danger" onclick="deleteCurrentLib()">删除题库</button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL ==================== -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-note">
+      <div class="modal-title" id="modal-title">提示</div>
+      <div class="modal-text" id="modal-text"></div>
+      <div class="modal-btns">
+        <button class="btn-sm" id="modal-cancel" onclick="onModalCancel()">取消</button>
+        <button class="btn-sm prime" id="modal-ok" onclick="onModalOk()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="xlsx.full.min.js"></script>
+<script src="data.js"></script>
+<script src="js/state.js?v=21"></script>
+<script src="js/utils.js?v=21"></script>
+<script src="js/storage.js?v=21"></script>
+<script src="js/settings.js?v=21"></script>
+<script src="js/modal.js?v=21"></script>
+<script src="js/exam.js?v=21"></script>
+<script src="js/practice.js?v=21"></script>
+<script src="js/import.js?v=21"></script>
+<script src="js/home.js?v=21"></script>
+<script src="js/main.js?v=21"></script>
+</body>
+</html>

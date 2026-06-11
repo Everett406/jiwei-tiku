@@ -1,0 +1,109 @@
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes paperNext { 0% { transform: translateX(var(--anim-translate, 30px)) rotate(var(--anim-rotate, 3deg)); opacity: .7; } 60% { transform: translateX(-4px) rotate(calc(var(--anim-rotate, 3deg) * -0.3)); opacity: 1; } 100% { transform: translateX(0) rotate(0); opacity: 1; } }
+@keyframes paperPrev { 0% { transform: translateX(calc(var(--anim-translate, 30px) * -1)) rotate(calc(var(--anim-rotate, 3deg) * -1)); opacity: .7; } 60% { transform: translateX(4px) rotate(calc(var(--anim-rotate, 3deg) * 0.3)); opacity: 1; } 100% { transform: translateX(0) rotate(0); opacity: 1; } }
+@keyframes wiggle { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-2deg)} 40%{transform:rotate(2deg)} 60%{transform:rotate(-1deg)} 80%{transform:rotate(1deg)} }
+@keyframes popIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.note-track.slide-next { animation: paperNext var(--anim-dur, .4s) cubic-bezier(.25,.8,.25,1); }
+.note-track.slide-prev { animation: paperPrev var(--anim-dur, .4s) cubic-bezier(.25,.8,.25,1); }
+
+/* ===== Page Transitions ===== */
+@keyframes pageEnterForward {
+  from { transform: translateX(30px) scale(0.98); opacity: 0; }
+  to   { transform: translateX(0)    scale(1);    opacity: 1; }
+}
+@keyframes pageEnterBackward {
+  from { transform: translateX(-20px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+.page {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  z-index: 1;
+}
+.page.active {
+  display: flex;
+  z-index: 2;
+  animation: pageEnterForward .4s cubic-bezier(.25,.8,.25,1) both;
+}
+.page.active.backward {
+  animation: pageEnterBackward .35s cubic-bezier(.25,.8,.25,1) both;
+}
+
+/* ===== Stagger animations (both + play-state, stable across page switches) ===== */
+@keyframes tapeBreathe {
+  0%   { opacity: 0; transform: translateY(18px) scale(0.95); }
+  60%  { opacity: 1; transform: translateY(-3px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.tape-item {
+  animation: tapeBreathe .5s cubic-bezier(.25,.8,.25,1) both paused;
+}
+.page.active .tape-item:nth-child(1) { animation-delay: 0.08s; animation-play-state: running; }
+.page.active .tape-item:nth-child(2) { animation-delay: 0.16s; animation-play-state: running; }
+.page.active .tape-item:nth-child(3) { animation-delay: 0.24s; animation-play-state: running; }
+.page.active .tape-item:nth-child(4) { animation-delay: 0.32s; animation-play-state: running; }
+
+@keyframes rowFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.settings-row {
+  animation: rowFadeUp .35s cubic-bezier(.25,.8,.25,1) both paused;
+}
+.page.active .settings-row:nth-child(1) { animation-delay: 0.06s; animation-play-state: running; }
+.page.active .settings-row:nth-child(2) { animation-delay: 0.12s; animation-play-state: running; }
+.page.active .settings-row:nth-child(3) { animation-delay: 0.18s; animation-play-state: running; }
+.page.active .settings-row:nth-child(4) { animation-delay: 0.24s; animation-play-state: running; }
+.page.active .settings-row:nth-child(5) { animation-delay: 0.30s; animation-play-state: running; }
+
+.about-body p {
+  animation: rowFadeUp .35s cubic-bezier(.25,.8,.25,1) both paused;
+}
+.page.active .about-body p:nth-child(1) { animation-delay: 0.06s; animation-play-state: running; }
+.page.active .about-body p:nth-child(2) { animation-delay: 0.12s; animation-play-state: running; }
+.page.active .about-body p:nth-child(3) { animation-delay: 0.18s; animation-play-state: running; }
+.page.active .about-body p:nth-child(4) { animation-delay: 0.24s; animation-play-state: running; }
+
+/* ===== Score count-up animation helper ===== */
+@keyframes scorePop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.result-score {
+  animation: scorePop .5s cubic-bezier(.25,.8,.25,1) both paused;
+}
+.page.active .result-score {
+  animation-play-state: running;
+}
+
+/* ===== Library list stagger ===== */
+.stagger-child {
+  animation: rowFadeUp .4s cubic-bezier(.25,.8,.25,1) both paused;
+}
+.stagger-child:nth-child(1)  { animation-delay: 0.00s; }
+.stagger-child:nth-child(2)  { animation-delay: 0.05s; }
+.stagger-child:nth-child(3)  { animation-delay: 0.10s; }
+.stagger-child:nth-child(4)  { animation-delay: 0.15s; }
+.stagger-child:nth-child(5)  { animation-delay: 0.20s; }
+.stagger-child:nth-child(6)  { animation-delay: 0.25s; }
+.stagger-child:nth-child(7)  { animation-delay: 0.30s; }
+.stagger-child:nth-child(8)  { animation-delay: 0.35s; }
+.stagger-child:nth-child(9)  { animation-delay: 0.40s; }
+.stagger-child:nth-child(10) { animation-delay: 0.45s; }
+.page.active .stagger-child {
+  animation-play-state: running;
+}
+
+/* ===== Smooth scrolling containers ===== */
+.home-scroll, .about-scroll, .result-scroll, .settings-body, .import-body, .prompt-body, .config-body, .lib-menu-body, .sheet-scroll, .card-panel .sheet-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}

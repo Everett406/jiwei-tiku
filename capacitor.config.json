@@ -1,0 +1,8 @@
+{
+  "appId": "com.rikka.jiwei",
+  "appName": "积微",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
