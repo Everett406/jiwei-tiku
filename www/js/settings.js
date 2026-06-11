@@ -3,7 +3,8 @@ const DEFAULT_SETTINGS = {
   fontFamily: 'default',
   fontSize: 'normal',
   autoNext: true,
-  animSpeed: 'normal'
+  animSpeed: 'normal',
+  autoCheckUpdate: true
 };
 function loadSettings() {
   try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(settingsKey()) || '{}')); }
@@ -65,6 +66,7 @@ function updateSettingChips(s) {
       if (parent === 'size-options') active = btn.dataset.val === s.fontSize;
       if (parent === 'auto-options') active = btn.dataset.val === String(s.autoNext);
       if (parent === 'speed-options') active = btn.dataset.val === s.animSpeed;
+      if (parent === 'update-options') active = btn.dataset.val === String(s.autoCheckUpdate);
       btn.classList.toggle('active', active);
     });
   });
@@ -72,7 +74,7 @@ function updateSettingChips(s) {
 
 function setSetting(key, val) {
   const s = loadSettings();
-  if (key === 'autoNext') val = val === 'true' || val === true;
+  if (key === 'autoNext' || key === 'autoCheckUpdate') val = val === 'true' || val === true;
   s[key] = val;
   saveSettings(s);
   applySettings();
@@ -81,4 +83,107 @@ function setSetting(key, val) {
 function openSettingsPage() {
   showPage('page-settings', 'forward');
   applySettings();
+}
+
+/* ========== 版本更新检查 ========== */
+
+const GITHUB_OWNER = 'Everett406';
+const GITHUB_REPO = 'jiwei-tiku';
+const UPDATE_CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24小时
+
+function getCurrentVersion() {
+  // 优先从 AndroidBridge 获取原生版本号
+  if (window.AndroidBridge && typeof window.AndroidBridge.getAppVersion === 'function') {
+    try {
+      return window.AndroidBridge.getAppVersion();
+    } catch (e) {
+      console.warn('获取原生版本失败:', e);
+    }
+  }
+  // 回退：从 localStorage 读取上次记录的版本
+  return localStorage.getItem('app_version') || '2.2.0';
+}
+
+function compareVersion(v1, v2) {
+  const parts1 = v1.replace(/^v/, '').split('.').map(Number);
+  const parts2 = v2.replace(/^v/, '').split('.').map(Number);
+  const len = Math.max(parts1.length, parts2.length);
+  for (let i = 0; i < len; i++) {
+    const a = parts1[i] || 0;
+    const b = parts2[i] || 0;
+    if (a > b) return 1;
+    if (a < b) return -1;
+  }
+  return 0;
+}
+
+async function checkForUpdate(force = false) {
+  const s = loadSettings();
+  if (!force && !s.autoCheckUpdate) return;
+
+  const lastCheck = parseInt(localStorage.getItem('last_update_check') || '0');
+  const now = Date.now();
+  if (!force && now - lastCheck < UPDATE_CHECK_INTERVAL) return;
+
+  localStorage.setItem('last_update_check', String(now));
+
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`, {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!resp.ok) throw new Error('请求失败');
+    const release = await resp.json();
+    const latestVersion = release.tag_name.replace(/^v/, '');
+    const currentVersion = getCurrentVersion();
+
+    if (compareVersion(latestVersion, currentVersion) > 0) {
+      // 有新版本
+      const apkAsset = release.assets.find(a => a.name.endsWith('.apk'));
+      const downloadUrl = apkAsset ? apkAsset.browser_download_url : null;
+      showUpdateDialog(latestVersion, release.body || '', downloadUrl);
+    } else if (force) {
+      showToast('当前已是最新版本');
+    }
+  } catch (e) {
+    console.error('检查更新失败:', e);
+    if (force) showToast('检查更新失败，请稍后重试');
+  }
+}
+
+function showUpdateDialog(version, changelog, downloadUrl) {
+  const modal = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-title">发现新版本 v${version}</div>
+    <div class="modal-body" style="max-height:200px;overflow-y:auto;text-align:left;">
+      <div style="margin-bottom:12px;font-weight:600;">更新内容：</div>
+      <div style="white-space:pre-wrap;font-size:14px;line-height:1.6;">${escapeHtml(changelog)}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal()">稍后更新</button>
+      <button class="modal-btn modal-btn-primary" onclick="downloadUpdate('${downloadUrl || ''}', '${version}')">立即更新</button>
+    </div>
+  `;
+  modal.classList.add('active');
+}
+
+function downloadUpdate(url, version) {
+  closeModal();
+  if (!url) {
+    showToast('下载链接不可用');
+    return;
+  }
+  if (window.AndroidBridge && typeof window.AndroidBridge.downloadApk === 'function') {
+    window.AndroidBridge.downloadApk(url, `积微题库-v${version}.apk`);
+    showToast('已开始下载，完成后将自动安装');
+  } else {
+    // 浏览器环境：直接打开链接
+    window.open(url, '_blank');
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }

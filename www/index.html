@@ -247,10 +247,23 @@
               <button class="settings-chip" data-val="fast" onclick="setSetting('animSpeed','fast')">快</button>
             </div>
           </div>
+          <div class="settings-row">
+            <div class="settings-name">自动检查更新</div>
+            <div class="settings-chips" id="update-options">
+              <button class="settings-chip" data-val="true" onclick="setSetting('autoCheckUpdate',true)">开</button>
+              <button class="settings-chip" data-val="false" onclick="setSetting('autoCheckUpdate',false)">关</button>
+            </div>
+          </div>
+          <div class="settings-row" onclick="checkForUpdate(true)" style="cursor:pointer">
+            <div class="settings-name">检查更新</div>
+            <div class="settings-chips" style="pointer-events:none">
+              <span style="font-size:13px;color:var(--ink-2)">立即检查 ›</span>
+            </div>
+          </div>
           <div class="settings-row" onclick="showAbout()" style="cursor:pointer">
             <div class="settings-name">关于积微</div>
             <div class="settings-chips" style="pointer-events:none">
-              <span style="font-size:13px;color:var(--ink-2)">版本 v2.1 ›</span>
+              <span style="font-size:13px;color:var(--ink-2)">版本 v2.2.0 ›</span>
             </div>
           </div>
         </div>

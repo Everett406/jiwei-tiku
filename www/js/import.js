@@ -71,15 +71,21 @@ function doImport() {
 }
 
 function normalizeQuestions(data) {
-  return data.map((q, idx) => ({
-    id: q.id || (idx + 1),
-    question: String(q.question || ''),
-    answer: String(q.answer || '').trim().toUpperCase(),
-    options: (q.options || []).map((opt, oidx) => ({
-      key: opt.key || String.fromCharCode(65 + oidx),
-      text: String(opt.text || '')
-    })).filter(o => o.text)
-  })).filter(q => q.question && q.answer && q.options.length >= 2);
+  return data.map((q, idx) => {
+    const rawAnswer = String(q.answer || '').trim().toUpperCase();
+    // 检测题型：答案长度>1 且包含多个有效字母 → 多选题
+    const isMulti = rawAnswer.length > 1 && /^[A-Z]+$/.test(rawAnswer);
+    return {
+      id: q.id || (idx + 1),
+      question: String(q.question || ''),
+      answer: rawAnswer,
+      type: isMulti ? 'multi' : (q.type || 'single'),
+      options: (q.options || []).map((opt, oidx) => ({
+        key: opt.key || String.fromCharCode(65 + oidx),
+        text: String(opt.text || '')
+      })).filter(o => o.text)
+    };
+  }).filter(q => q.question && q.answer && q.options.length >= 2);
 }
 
 function parseJSON(text) {
@@ -194,6 +200,9 @@ function parseExcel(arrayBuffer) {
 function parseAnswer(raw) {
   if (!raw) return '';
   const s = String(raw).trim();
+  // 多选题：多个字母如 ABC、AB、ACD
+  const multiMatch = s.match(/^[A-Ea-e]{2,5}$/);
+  if (multiMatch) return multiMatch[0].toUpperCase().split('').sort().join('');
   // 直接字母 A-E
   if (/^[A-Ea-e]$/.test(s)) return s.toUpperCase();
   // 数字 1-5

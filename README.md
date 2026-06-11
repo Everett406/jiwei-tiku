@@ -28,10 +28,11 @@
 - ✅ **多题库管理** — 增删改题库，每个题库独立进度、错题、考试记录
 - ✅ **顺序/随机练习** — 支持选项乱序、手势滑动切题
 - ✅ **错题本** — 自动收录，支持批量移除和单独复习
-- ✅ **模拟考试** — 自定义题量，自动平衡判断/单选比例，计时提交
-- ✅ **JSON / Excel 导入** — 标准 7 列 Excel 格式（题干 | A | B | C | D | E | 答案）
+- ✅ **模拟考试** — 自定义题量，自动平衡判断/单选/多选比例，计时提交
+- ✅ **JSON / Excel 导入** — 标准 7 列 Excel 格式（题干 | A | B | C | D | E | 答案），自动识别多选题
 - ✅ **AI 提示词辅助** — 内置一键复制 Prompt，教 AI 把任意 PDF/Word/Excel 转成标准格式
 - ✅ **模板分享** — Android 端调用系统级分享，可用 WPS/微信/QQ 等打开空白模板
+- ✅ **应用内更新** — 自动检查 GitHub Release 新版本，一键下载安装
 
 ---
 
@@ -44,6 +45,7 @@
 - ✅ 原生启动屏（Splash Screen）
 - ✅ 导航栏颜色自定义（`AndroidBridge.setNavBarColor`）
 - ✅ 模板文件系统分享（`AndroidBridge.openTemplateWithSystemApp`）
+- ✅ 应用内更新检查与 APK 下载安装（`AndroidBridge.downloadApk` / `getAppVersion`）
 
 ---
 
@@ -132,7 +134,8 @@ cd android
 | 7 | 答案 | 正确选项字母（A-E）或中文词（正确/错误/对/错）|
 
 - **判断题**：只需 A/B 两列，答案填 `正确/错误/对/错` 或 `A/B`
-- **单选题**：至少 A/B 两列，最多 A-E
+- **单选题**：至少 A/B 两列，最多 A-E，答案填单个字母
+- **多选题**：至少 A/B 两列，最多 A-E，答案填多个字母如 `ABC`、`ABD`
 
 ### JSON 格式示例
 
@@ -165,6 +168,7 @@ cd android
 
 ## 版本信息
 
+- **v2.2.0** — 应用内更新检查、多选题支持、GitHub Actions 自动构建
 - **v2.0** — 通用化 rebranding、多题库、Excel 导入、AI 提示词、模板系统分享
 - **APK 体积**：约 4.3 MB
 - **Release APK 路径**：`android/app/build/outputs/apk/release/app-release.apk`

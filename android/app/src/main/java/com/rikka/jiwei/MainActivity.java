@@ -1,10 +1,16 @@
 package com.rikka.jiwei;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.webkit.JavascriptInterface;
@@ -17,6 +23,9 @@ import java.io.InputStream;
 
 public class MainActivity extends BridgeActivity {
 
+    private long currentDownloadId = -1;
+    private BroadcastReceiver downloadReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +34,62 @@ public class MainActivity extends BridgeActivity {
         getBridge().getWebView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         getBridge().getWebView().setVerticalScrollBarEnabled(false);
         setupSystemBars();
+        registerDownloadReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (downloadReceiver != null) {
+            unregisterReceiver(downloadReceiver);
+        }
+    }
+
+    private void registerDownloadReceiver() {
+        downloadReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                if (id == currentDownloadId) {
+                    checkDownloadAndInstall(id);
+                }
+            }
+        };
+        registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private void checkDownloadAndInstall(long downloadId) {
+        DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        if (dm == null) return;
+        
+        Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(downloadId));
+        if (cursor != null && cursor.moveToFirst()) {
+            int statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+            int uriIdx = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+            if (statusIdx >= 0 && uriIdx >= 0) {
+                int status = cursor.getInt(statusIdx);
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                    String uriString = cursor.getString(uriIdx);
+                    installApk(Uri.parse(uriString));
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    private void installApk(Uri apkUri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri contentUri;
+        if (apkUri.getScheme().equals("file")) {
+            File file = new File(apkUri.getPath());
+            contentUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", file);
+        } else {
+            contentUri = apkUri;
+        }
+        intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void setupSystemBars() {
@@ -121,6 +186,38 @@ public class MainActivity extends BridgeActivity {
                     Toast.makeText(MainActivity.this, "打开失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+        }
+
+        @JavascriptInterface
+        public void downloadApk(String url, String fileName) {
+            runOnUiThread(() -> {
+                try {
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                    request.setTitle("积微更新下载");
+                    request.setDescription("正在下载最新版本...");
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+                    request.setMimeType("application/vnd.android.package-archive");
+                    
+                    DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                    if (dm != null) {
+                        currentDownloadId = dm.enqueue(request);
+                        Toast.makeText(MainActivity.this, "开始下载更新...", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "下载失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String getAppVersion() {
+            try {
+                return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (Exception e) {
+                return "unknown";
+            }
         }
     }
 }

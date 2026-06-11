@@ -4,22 +4,30 @@ function startExam(count) {
   const n = count || 50;
   if (total < n) { showModal('not-enough'); return; }
 
-  const judges = QUESTIONS.filter(q => q.options.length === 2);
-  const choices = QUESTIONS.filter(q => q.options.length !== 2);
+  const judges = QUESTIONS.filter(q => q.options.length === 2 && !q.type);
+  const singles = QUESTIONS.filter(q => q.options.length !== 2 && q.type !== 'multi');
+  const multis = QUESTIONS.filter(q => q.type === 'multi');
 
   let judgeCount = Math.round(n * judges.length / total);
-  let choiceCount = n - judgeCount;
+  let singleCount = Math.round(n * singles.length / total);
+  let multiCount = n - judgeCount - singleCount;
 
-  if (judgeCount > judges.length) { choiceCount += (judgeCount - judges.length); judgeCount = judges.length; }
-  if (choiceCount > choices.length) { judgeCount += (choiceCount - choices.length); choiceCount = choices.length; }
+  // 边界修正
+  if (multiCount > multis.length) { singleCount += (multiCount - multis.length); multiCount = multis.length; }
+  if (singleCount > singles.length) { judgeCount += (singleCount - singles.length); singleCount = singles.length; }
+  if (judgeCount > judges.length) { singleCount += (judgeCount - judges.length); judgeCount = judges.length; }
+  if (singleCount > singles.length) { multiCount += (singleCount - singles.length); singleCount = singles.length; }
+  if (multiCount > multis.length) { singleCount += (multiCount - multis.length); multiCount = multis.length; }
   if (judgeCount > judges.length) judgeCount = judges.length;
-  if (choiceCount > choices.length) choiceCount = choices.length;
+  if (singleCount > singles.length) singleCount = singles.length;
+  if (multiCount > multis.length) multiCount = multis.length;
 
   const judgePool = shuffle(judges.slice()).slice(0, judgeCount);
-  const choicePool = shuffle(choices.slice()).slice(0, choiceCount);
-  currentList = shuffle(judgePool.concat(choicePool));
+  const singlePool = shuffle(singles.slice()).slice(0, singleCount);
+  const multiPool = shuffle(multis.slice()).slice(0, multiCount);
+  currentList = shuffle(judgePool.concat(singlePool).concat(multiPool));
 
-  currentIndex = 0; userAnswers = {}; slideDir = '';
+  currentIndex = 0; userAnswers = {}; checked = {}; slideDir = '';
   examSecondsLeft = Math.max(15, Math.floor(n * 0.9)) * 60;
   renderExam(false);
   showPage('page-exam', 'forward');
@@ -47,16 +55,25 @@ function updateCustomCount() {
   input.value = n;
 
   const total = QUESTIONS.length || 1;
-  const judges = QUESTIONS.filter(q => q.options.length === 2).length;
-  const choices = QUESTIONS.length - judges;
+  const judges = QUESTIONS.filter(q => q.options.length === 2 && !q.type).length;
+  const singles = QUESTIONS.filter(q => q.options.length !== 2 && q.type !== 'multi').length;
+  const multis = QUESTIONS.filter(q => q.type === 'multi').length;
   let j = Math.round(n * judges / total);
-  let c = n - j;
-  if (j > judges) { c += (j - judges); j = judges; }
-  if (c > choices) { j += (c - choices); c = choices; }
+  let s = Math.round(n * singles / total);
+  let m = n - j - s;
+  if (m > multis) { s += (m - multis); m = multis; }
+  if (s > singles) { j += (s - singles); s = singles; }
+  if (j > judges) { s += (j - judges); j = judges; }
+  if (s > singles) { m += (s - singles); s = singles; }
+  if (m > multis) { s += (m - multis); m = multis; }
   if (j > judges) j = judges;
-  if (c > choices) c = choices;
+  if (s > singles) s = singles;
+  if (m > multis) m = multis;
 
-  document.getElementById('exam-config-info').textContent = '判断题约 ' + j + ' 道 · 单选题约 ' + c + ' 道 · 限时 ' + Math.max(15, Math.floor(n * 0.9)) + ' 分钟';
+  let info = '判断题约 ' + j + ' 道 · 单选题约 ' + s + ' 道';
+  if (multis > 0) info += ' · 多选题约 ' + m + ' 道';
+  info += ' · 限时 ' + Math.max(15, Math.floor(n * 0.9)) + ' 分钟';
+  document.getElementById('exam-config-info').textContent = info;
 
   document.querySelectorAll('#exam-config-sheet .config-chip').forEach(btn => {
     const num = parseInt(btn.textContent, 10);
@@ -78,10 +95,19 @@ function renderExam(animate = true) {
   const answeredEl = document.getElementById('exam-progress-text');
   if (answeredEl) answeredEl.textContent = '已答 ' + answered + ' / ' + totalExam;
   document.getElementById('exam-title').innerHTML = formatBlanks(escapeHtml(q.question));
-  const isJudge = q.options.length === 2;
+  const isJudge = q.options.length === 2 && !q.type;
+  const isMulti = q.type === 'multi';
   const tag = document.getElementById('exam-type');
-  tag.textContent = isJudge ? '判断题' : '单选题';
-  tag.className = 'q-badge ' + (isJudge ? 'judge' : '');
+  if (isJudge) {
+    tag.textContent = '判断题';
+    tag.className = 'q-badge judge';
+  } else if (isMulti) {
+    tag.textContent = '多选题';
+    tag.className = 'q-badge multi';
+  } else {
+    tag.textContent = '单选题';
+    tag.className = 'q-badge';
+  }
   renderOptions('exam-options', q, 'exam');
   renderDots();
 }

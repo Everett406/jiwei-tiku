@@ -188,16 +188,18 @@ function startMode(mode, filter) {
 function buildRandomList(filter) {
   const globalChecked = getGlobalChecked();
   let pool = QUESTIONS;
-  if (filter === 'judge') pool = QUESTIONS.filter(q => q.options.length === 2);
-  else if (filter === 'choice') pool = QUESTIONS.filter(q => q.options.length !== 2);
+  if (filter === 'judge') pool = QUESTIONS.filter(q => q.options.length === 2 && !q.type);
+  else if (filter === 'choice') pool = QUESTIONS.filter(q => q.options.length !== 2 && q.type !== 'multi');
+  else if (filter === 'multi') pool = QUESTIONS.filter(q => q.type === 'multi');
   const undone = pool.filter(q => !globalChecked[q.id]);
   if (undone.length > 0) return shuffle(undone.slice());
   return shuffle(pool.slice());
 }
 
 function filterQuestions(pool, filter) {
-  if (filter === 'judge') return pool.filter(q => q.options.length === 2);
-  if (filter === 'choice') return pool.filter(q => q.options.length !== 2);
+  if (filter === 'judge') return pool.filter(q => q.options.length === 2 && !q.type);
+  if (filter === 'choice') return pool.filter(q => q.options.length !== 2 && q.type !== 'multi');
+  if (filter === 'multi') return pool.filter(q => q.type === 'multi');
   return pool;
 }
 

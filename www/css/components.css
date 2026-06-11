@@ -181,6 +181,7 @@
 .q-title { font-size: 18px; font-weight: 500; line-height: 1.85; margin: 6px 0 16px; color: var(--ink); }
 .q-badge { display: inline-block; font-size: 12px; color: #fff; background: var(--ink); padding: 4px 12px; font-weight: 500; margin-bottom: 14px; }
 .q-badge.judge { background: var(--ink-2); }
+.q-badge.multi { background: #C75B39; }
 
 .opts { display: flex; flex-direction: column; gap: 10px; }
 .opt-note { display: flex; align-items: center; gap: 12px; padding: 14px 10px; border: 2px solid var(--line); cursor: pointer; transition: transform .12s cubic-bezier(.25,.8,.25,1), background .12s ease, box-shadow .12s ease; background: var(--paper); }
@@ -204,6 +205,11 @@
 .feedback-note.show { display: block; }
 .feedback-note.ok { background: var(--tape-green); color: var(--ok); border-color: var(--ok); }
 .feedback-note.bad { background: var(--tape-pink); color: var(--bad); border-color: var(--bad); }
+
+/* 多选题确认按钮 */
+.multi-submit-btn { margin-top: 12px; padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer; border: 2px solid var(--line); background: var(--ink); color: var(--card); font-family: "Noto Sans SC", sans-serif; box-shadow: 3px 3px 0 rgba(0,0,0,.12); transition: transform .1s cubic-bezier(.25,.8,.25,1), box-shadow .1s ease; }
+.multi-submit-btn:hover { opacity: .9; }
+.multi-submit-btn:active { transform: scale(0.97); box-shadow: 1px 1px 0 rgba(0,0,0,.1); }
 
 /* ===== Footer ===== */
 .raw-footer { flex: 0 0 auto; padding: 12px 16px 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid var(--line); background: var(--card); }
