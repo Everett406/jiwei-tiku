@@ -89,8 +89,9 @@ lint/tmp/
 # Android Profiling
 *.hprof
 
-# Cordova plugins for Capacitor
-capacitor-cordova-android-plugins
+# Cordova plugins for Capacitor - only exclude build outputs, keep gradle configs
+capacitor-cordova-android-plugins/build/
+capacitor-cordova-android-plugins/.gradle/
 
 # Copied web assets
 app/src/main/assets/public
