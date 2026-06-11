@@ -35,6 +35,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Build Release APK
         run: cd android && ./gradlew app:assembleRelease
 
