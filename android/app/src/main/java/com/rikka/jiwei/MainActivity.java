@@ -34,18 +34,29 @@ public class MainActivity extends BridgeActivity {
         getBridge().getWebView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         getBridge().getWebView().setVerticalScrollBarEnabled(false);
         setupSystemBars();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         registerDownloadReceiver();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         if (downloadReceiver != null) {
-            unregisterReceiver(downloadReceiver);
+            try {
+                unregisterReceiver(downloadReceiver);
+            } catch (Exception e) {
+                // 可能未注册或已注销
+            }
+            downloadReceiver = null;
         }
     }
 
     private void registerDownloadReceiver() {
+        if (downloadReceiver != null) return;
         downloadReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
