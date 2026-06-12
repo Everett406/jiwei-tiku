@@ -27,7 +27,7 @@ function startExam(count) {
   const multiPool = shuffle(multis.slice()).slice(0, multiCount);
   currentList = shuffle(judgePool.concat(singlePool).concat(multiPool));
 
-  currentIndex = 0; userAnswers = {}; checked = {}; slideDir = '';
+  currentIndex = 0; userAnswers = {}; slideDir = '';
   examSecondsLeft = Math.max(15, Math.floor(n * 0.9)) * 60;
   renderExam(false);
   showPage('page-exam', 'forward');

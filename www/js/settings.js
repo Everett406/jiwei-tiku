@@ -151,24 +151,23 @@ async function checkForUpdate(force = false) {
 }
 
 function showUpdateDialog(version, changelog, downloadUrl) {
-  const modal = document.getElementById('modal-overlay');
-  const content = document.getElementById('modal-content');
-  content.innerHTML = `
-    <div class="modal-title">发现新版本 v${version}</div>
-    <div class="modal-body" style="max-height:200px;overflow-y:auto;text-align:left;">
-      <div style="margin-bottom:12px;font-weight:600;">更新内容：</div>
-      <div style="white-space:pre-wrap;font-size:14px;line-height:1.6;">${escapeHtml(changelog)}</div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" onclick="closeModal()">稍后更新</button>
-      <button class="modal-btn modal-btn-primary" onclick="downloadUpdate('${downloadUrl || ''}', '${version}')">立即更新</button>
-    </div>
-  `;
-  modal.classList.add('active');
+  showModal('hint', `发现新版本 v${version}\n\n${changelog}\n\n是否前往下载？`);
+  // 覆盖确定按钮行为
+  modalCb = () => {
+    hideModal();
+    if (downloadUrl && window.AndroidBridge && typeof window.AndroidBridge.downloadApk === 'function') {
+      window.AndroidBridge.downloadApk(downloadUrl, `积微题库-v${version}.apk`);
+      showToast('已开始下载，完成后将自动安装');
+    } else if (downloadUrl) {
+      window.open(downloadUrl, '_blank');
+    } else {
+      showToast('下载链接不可用');
+    }
+  };
 }
 
 function downloadUpdate(url, version) {
-  closeModal();
+  hideModal();
   if (!url) {
     showToast('下载链接不可用');
     return;
@@ -177,13 +176,6 @@ function downloadUpdate(url, version) {
     window.AndroidBridge.downloadApk(url, `积微题库-v${version}.apk`);
     showToast('已开始下载，完成后将自动安装');
   } else {
-    // 浏览器环境：直接打开链接
     window.open(url, '_blank');
   }
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }

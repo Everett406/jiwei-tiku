@@ -265,8 +265,3 @@ function closeSheet() {
 function formatBlanks(text) {
   return text.replace(/_{3,}/g, '<span class="blank-line">____</span>');
 }
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}

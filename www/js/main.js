@@ -159,7 +159,7 @@ async function init() {
   }
 
   // 自动检查更新（延迟3秒，避免影响启动速度）
-  setTimeout(() => checkForUpdate(false), 3000);
+  // setTimeout(() => checkForUpdate(false), 3000);
 }
 
 if ('serviceWorker' in navigator) {
