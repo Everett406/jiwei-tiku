@@ -174,7 +174,3 @@ cd android
 - **Release APK 路径**：`android/app/build/outputs/apk/release/app-release.apk`
 
 ---
-
-## 作者
-
-*尚家辉（赴野）*
