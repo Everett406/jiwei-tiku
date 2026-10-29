@@ -1,3 +1,9 @@
+---
+
+> [!NOTE]
+> **本仓库已迁移至 Gitee**：<https://gitee.com/Everett5678/jiwei-tiku>
+> GitHub 端仅作只读归档，新代码请推送到 Gitee。
+
 # 积微 (Jiwei) — 通用刷题 APP
 
 > 一个基于 Capacitor + 原生 Web 技术栈构建的 Android 刷题应用。支持多题库管理、顺序/随机练习、错题本、模拟考试，以及 JSON/Excel 自定义导入。
